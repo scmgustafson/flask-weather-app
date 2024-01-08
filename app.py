@@ -25,20 +25,23 @@ def san_francisco_temperature():
 
     temperature = parse_temperature(response.json())
 
-    return render_template("weather_index.html", temperature=temperature, location=LOCATION)
+    return render_template("sf_temp.html", temperature=temperature, location=LOCATION)
 
-# @app.route("/san-francisco-response")
-# def san_francisco_response():
-#     # Set latitude and longitude of San Francisco
-#     LATITUDE = '37.7898669'
-#     LONGITUDE = '-122.4268036'
+@app.route("/borrego-springs")
+def borrego_springs_temperature():
+    # Set latitude and longitude of San Francisco
+    LATITUDE = '33.255871'
+    LONGITUDE = '-116.375015'
+    LOCATION = 'Borrego Springs'
 
-#     # Set desired API call information
-#     address = 'https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=imperial'.format(lat=LATITUDE, lon=LONGITUDE, api_key=API_KEY)
+    # Set desired API call information
+    address = 'https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=imperial'.format(lat=LATITUDE, lon=LONGITUDE, api_key=API_KEY)
 
-#     response = requests.get(address)
+    response = requests.get(address)
 
-#     return response.json()
+    temperature = parse_temperature(response.json())
+
+    return render_template("borrego_temp.html", temperature=temperature, location=LOCATION)
 
 def parse_temperature(response):
     temperature = str(response['main']['temp'])
