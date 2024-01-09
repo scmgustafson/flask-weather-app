@@ -1,6 +1,7 @@
 import config
 
 from flask import Flask, render_template
+from datetime import datetime
 import requests
 import json
 
@@ -35,6 +36,32 @@ def borrego_springs_temperature():
 
 # TODO add main index page that displays all available routes (premade)
 # TODO add a page that accepts a city name and then gives above info (name -> geochaching api for lat and long -> openweather api for temp)
+
+@app.route("/testing")
+def testing():
+    time = datetime.now()
+    time = time.strftime('%H:%M:%S')
+
+    print('Tested at @ {time}'.format(time=time))
+    coordinates = get_coordinates('Morgan_Hill,CA,US')
+    return str(coordinates[0])+', '+str(coordinates[1])
+
+def parse_coordinates(response):
+    try:
+        coordinates = []
+        coordinates.append(str(response[0]['lat']))
+        coordinates.append(str(response[0]['lon']))
+        return coordinates
+    except Exception as e:
+        return str(e)
+
+def get_coordinates(location):
+    address = 'http://api.openweathermap.org/geo/1.0/direct?q={location}&limit=1&appid={api_key}'.format(location=location, api_key=API_KEY)
+
+    response = requests.get(address)
+    coordinates = parse_coordinates(response.json())
+
+    return coordinates
 
 def parse_temperature(response):
     temperature = str(response['main']['temp'])
