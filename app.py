@@ -18,12 +18,7 @@ def san_francisco_temperature():
     LONGITUDE = '-122.4268036'
     LOCATION = "San Francisco"
 
-    # Set desired API call information
-    address = 'https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=imperial'.format(lat=LATITUDE, lon=LONGITUDE, api_key=API_KEY)
-
-    response = requests.get(address)
-
-    temperature = parse_temperature(response.json())
+    temperature = get_temperature(LATITUDE, LONGITUDE)
 
     return render_template("sf_temp.html", temperature=temperature, location=LOCATION)
 
@@ -34,17 +29,34 @@ def borrego_springs_temperature():
     LONGITUDE = '-116.375015'
     LOCATION = 'Borrego Springs'
 
-    # Set desired API call information
-    address = 'https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=imperial'.format(lat=LATITUDE, lon=LONGITUDE, api_key=API_KEY)
+    temperature = get_temperature(LATITUDE, LONGITUDE)
+
+    return render_template("borrego_temp.html", temperature=temperature, location=LOCATION)
+
+# TODO add main index page that displays all available routes (premade)
+# TODO add a page that accepts a city name and then gives above info (name -> geochaching api for lat and long -> openweather api for temp)
+
+def parse_temperature(response):
+    temperature = str(response['main']['temp'])
+    return temperature
+
+def get_temperature(latitude, longitude):
+    """
+    Returns the temperature in fahrenheit at a given coordinates (lat, lon)
+
+    Args:
+        latitude: string formatted latitude
+        longitude: string formatted longitude
+    
+    Returns:
+        temperature: string formatted temperature in fahrenheit
+    """
+    address = 'https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=imperial'.format(lat=latitude, lon=longitude, api_key=API_KEY)
 
     response = requests.get(address)
 
     temperature = parse_temperature(response.json())
 
-    return render_template("borrego_temp.html", temperature=temperature, location=LOCATION)
-
-def parse_temperature(response):
-    temperature = str(response['main']['temp'])
     return temperature
 
 if __name__ == '__main__':
