@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% for link in links %}
+        <div class='link'>
+            <a href="{{ url_for(link) }}"> {{ link }}</h3>
+        </div>
+    {% endfor %}
+{% endblock %}

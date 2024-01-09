@@ -1,6 +1,6 @@
 import config
 
-from flask import Flask, render_template
+from flask import Flask, render_template, url_for
 from datetime import datetime
 import requests
 import json
@@ -9,10 +9,17 @@ app = Flask(__name__)
 API_KEY = config.openweather_api_key
 
 @app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
+def index():
+    links = []
+    for rule in app.url_map.iter_rules():
+        # Filter out rules we can't navigate to in a browser and rules that require parameters
+        if "GET" in rule.methods and str(rule) != "/static/<path:filename>": #and has_no_empty_params(rule):
+            url = url_for(rule.endpoint, **(rule.defaults or {}))
+            links.append(rule.endpoint)
 
-@app.route("/san-francisco")
+    return render_template('index.html', links=links)
+
+@app.route("/san-francisco", methods=["GET"])
 def san_francisco_temperature():
     # Set latitude and longitude of San Francisco
     LATITUDE = '37.7898669'
@@ -23,7 +30,7 @@ def san_francisco_temperature():
 
     return render_template("sf_temp.html", temperature=temperature, location=LOCATION)
 
-@app.route("/borrego-springs")
+@app.route("/borrego-springs", methods=["GET"])
 def borrego_springs_temperature():
     # Set latitude and longitude of San Francisco
     LATITUDE = '33.255871'
@@ -37,7 +44,7 @@ def borrego_springs_temperature():
 # TODO add main index page that displays all available routes (premade)
 # TODO add a page that accepts a city name and then gives above info (name -> geochaching api for lat and long -> openweather api for temp)
 
-@app.route("/testing")
+@app.route("/testing", methods=["GET"])
 def testing():
     time = datetime.now()
     time = time.strftime('%H:%M:%S')
@@ -45,6 +52,11 @@ def testing():
     print('Tested at @ {time}'.format(time=time))
     coordinates = get_coordinates('Morgan_Hill,CA,US')
     return str(coordinates[0])+', '+str(coordinates[1])
+
+def has_no_empty_params(rule):
+    defaults = rule.defaults if rule.defaults is not None else ()
+    arguments = rule.arguments if rule.arguments is not None else ()
+    return len(defaults) >= len(arguments)
 
 def parse_coordinates(response):
     try:
