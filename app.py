@@ -1,13 +1,15 @@
 import config
 
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, abort
 from datetime import datetime
+from markupsafe import escape
 import requests
 import json
 
 app = Flask(__name__)
 API_KEY = config.openweather_api_key
 
+# TODO polish main index page
 @app.route("/")
 def index():
     links = []
@@ -41,15 +43,30 @@ def borrego_springs_temperature():
 
     return render_template("borrego_temp.html", temperature=temperature, location=LOCATION)
 
-# TODO add main index page that displays all available routes (premade)
 # TODO add a page that accepts a city name and then gives above info (name -> geochaching api for lat and long -> openweather api for temp)
+
+# Testing section below
+
+# Testing dynamic routes / passing variables into route then view function
+@app.route('/capitalize/<word>/')
+def capitalize(word):
+    return '<h1>{word}</h1>'.format(word=escape(word.upper()))
+
+@app.route('/greet_user/<user_id>/')
+def greet_user(user_id):
+    users = ['1', '2', '3']
+    try:
+        return '<h1>{user_id}</h1>'.format(user_id=users[int(user_id)])
+    except:
+        abort(404)
 
 @app.route("/testing", methods=["GET"])
 def testing():
     time = datetime.now()
     time = time.strftime('%H:%M:%S')
-
     print('Tested at @ {time}'.format(time=time))
+
+    #Testing returning coordinates for a location
     coordinates = get_coordinates('Morgan_Hill,CA,US')
     return str(coordinates[0])+', '+str(coordinates[1])
 
@@ -81,7 +98,7 @@ def parse_temperature(response):
 
 def get_temperature(latitude, longitude):
     """
-    Returns the temperature in fahrenheit at a given coordinates (lat, lon)
+    Returns a string of the temperature in fahrenheit at a given coordinates (lat, lon)
 
     Args:
         latitude: string formatted latitude
