@@ -1,2 +1,4 @@
-Flask==1.0.2
-requests==2.21.0MarkupSafe==1.1.0
+Flask
+requests==2.21.0
+MarkupSafe==1.1.0
+itsdangerous==0.24
