@@ -4,23 +4,23 @@ from flask import Flask, render_template, url_for, abort
 from datetime import datetime
 from markupsafe import escape
 import requests
-import json
 
 app = Flask(__name__)
 API_KEY = config.openweather_api_key
 
 # TODO polish main index page
+# @app.route("/")
+# def index():
+#     links = []
+#     for rule in app.url_map.iter_rules():
+#         # Filter out rules we can't navigate to in a browser and rules that require parameters
+#         if "GET" in rule.methods and str(rule) != "/static/<path:filename>": #and has_no_empty_params(rule):
+#             url = url_for(rule.endpoint, **(rule.defaults or {}))
+#             links.append(rule.endpoint)
+
+#     return render_template('index.html', links=links)
+
 @app.route("/")
-def index():
-    links = []
-    for rule in app.url_map.iter_rules():
-        # Filter out rules we can't navigate to in a browser and rules that require parameters
-        if "GET" in rule.methods and str(rule) != "/static/<path:filename>": #and has_no_empty_params(rule):
-            url = url_for(rule.endpoint, **(rule.defaults or {}))
-            links.append(rule.endpoint)
-
-    return render_template('index.html', links=links)
-
 @app.route("/san-francisco", methods=["GET"])
 def san_francisco_temperature():
     # Set latitude and longitude of San Francisco
@@ -116,4 +116,4 @@ def get_temperature(latitude, longitude):
     return temperature
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=8000)
